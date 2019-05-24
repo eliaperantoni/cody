@@ -1,7 +1,9 @@
 # cody
 
+# Frontend
 ## Project setup
 ```
+cd web
 yarn install
 ```
 
