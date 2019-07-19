@@ -101,6 +101,13 @@ body,
     flex: 4;
   }
 
+  @media screen and (orientation: portrait) {
+    .left,
+    .right {
+      visibility: hidden;
+    }
+  }
+
   .center {
     flex: 9;
   }
