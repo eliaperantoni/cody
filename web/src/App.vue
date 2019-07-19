@@ -149,9 +149,12 @@ body,
 
 .content {
   position: relative;
+  flex: 1;
   .card,
   .hint {
     position: absolute;
+    width: 100%;
+    box-sizing: border-box;
   }
   .card {
     top: 0;
