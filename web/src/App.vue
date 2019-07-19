@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <div class="left"></div>
+
+    <div class="left">
+      <Sidebar class="sidebar"/>
+    </div>
+
     <div class="center">
       <header>
         <input type="text" placeholder="Type here to search" v-model="query" @input="search" />
@@ -16,19 +20,22 @@
         </transition>
       </div>
     </div>
+
     <div class="right"></div>
+
   </div>
 </template>
 
 <script>
 import Card from "./components/Card.vue";
 import Hint from "./components/Hint.vue";
+import Sidebar from "./components/Sidebar.vue";
 import axios from "axios";
 import { debounce, isEmpty } from "lodash";
 
 export default {
   name: "app",
-  components: { Card, Hint },
+  components: { Card, Hint, Sidebar },
   data() {
     return {
       query: "",
