@@ -113,6 +113,10 @@ body,
   }
 }
 
+.left {
+  padding: 40px 0 0 40px;
+}
+
 .center {
   display: flex;
   flex-direction: column;
@@ -153,19 +157,26 @@ body,
   .card,
   .hint {
     position: absolute;
-    width: 100%;
-    box-sizing: border-box;
   }
   .card {
     top: 0;
   }
   .hint {
-    transform: rotate(-6deg);
-    text-align: center;
-    width: 100%;
     top: 20%;
-    font-size: 1vw;
   }
+}
+
+.card, .hint {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card {
+  overflow: hidden;
+}
+
+.hint {
+  transform: rotate(-6deg);
 }
 
 .content {

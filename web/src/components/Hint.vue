@@ -12,6 +12,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.hint {
+  font-size: 1vw;
+  text-align: center;
+}
+
 p {
   margin: 0;
   font-family: "Fira Code";
