@@ -19,29 +19,39 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-article
-  background: white
-  border-radius: 13px
-  box-shadow: 0 1px 37px rgba(0, 177, 255, 0.09)
-  padding: 2.6em
-  header
-    > nav, > h1
-      text-shadow: 0 0.4px 1px rgba(0,0,0,0.1)
-    nav
-      font-family: "Fira Code"
-      color: #8E8E8E
-      margin-bottom: .3em
-      display: flex
-      flex-direction: row
-      > div > span:first-child:hover
-        text-decoration: underline
-        cursor: pointer
-    h1
-      font-family: Roboto
-      font-size: 2.7em
-      font-weight: 400
-      color: #3D3D3D
-      margin: 0
-      margin-left: -.04em
+<style lang="scss" scoped>
+article {
+  background: white;
+  border-radius: 13px;
+  box-shadow: 0 1px 37px rgba(0, 177, 255, 0.09);
+  padding: 2.6em;
+
+  header {
+    > nav, > h1 {
+      text-shadow: 0 0.4px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    nav {
+      font-family: "Fira Code";
+      color: #8E8E8E;
+      margin-bottom: 0.3em;
+      display: flex;
+      flex-direction: row;
+
+      > div > span:first-child:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    h1 {
+      font-family: Roboto;
+      font-size: 2.7em;
+      font-weight: 400;
+      color: #3D3D3D;
+      margin: 0;
+      margin-left: -0.04em;
+    }
+  }
+}
 </style>

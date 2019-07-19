@@ -3,9 +3,9 @@
     <div class="left"></div>
     <div class="center">
       <header>
-        <input type="text" placeholder="Type here to search" v-model="query">
+        <input type="text" placeholder="Type here to search" v-model="query" @input="search"/>
       </header>
-      <Card :card="card"/>
+      <Card v-if="showCard" :card="card" />
     </div>
     <div class="right"></div>
   </div>
@@ -24,22 +24,20 @@ export default {
       query: "",
       card: {
         title: "Delete Slice Element by Index",
-        breads: [
-          "Programming Languages",
-          "Go",
-          "Slices"
-        ]
+        breads: ["Programming Languages", "Go", "Slices"]
       }
-    }
+    };
   },
   methods: {
     search: debounce(function() {
-      return
-      if (this.query == "") {
+      if (this.query === "") {
         this.card = {};
         return;
       }
-      // TODO Do search
+      this.card = {
+        title: "Delete Slice Element by Index",
+        breads: ["Programming Languages", "Go", "Slices"]
+      };
     }, 150)
   },
   computed: {
@@ -55,44 +53,65 @@ export default {
 };
 </script>
 
-<style lang="sass">
-html, body, #app
-  height: 100%
-  width: 100%
-  margin: 0
-  padding: 0
-  background: #F8F6F6
-  display: flex
-  flex-direction: row
-  align-items: stretch
-  .left, .right
-    flex: 4
-  .center
-    flex: 9
-    display: flex
-    flex-direction: column
-    align-items: stretch
+<style lang="scss">
+@font-face {
+  font-family: Roboto;
+  src: url("../assets/fonts/roboto.ttf");
+}
 
-.center > header
-  display: flex
-  flex-direction: row
-  background: white
-  border-radius: 0 0 13px 13px
-  box-shadow: 0 1px 37px rgba(0, 177, 255, 0.16)
-  margin-bottom: 18px
-  input
-    flex: 1
-    font-size: 1.1em
-    font-family: Roboto
-    font-weight: 200
-    background: transparent
-    border: none
-    outline-width: 0
-    padding: .8em 1.9em
-    color: #979797
-    &::placeholder
-      opacity: .5
+@font-face {
+  font-family: "Fira Code";
+  src: url("../assets/fonts/firaCode.woff2");
+}
 
-Card
-  flex: 1
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #F8F6F6;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+
+  .left, .right {
+    flex: 4;
+  }
+
+  Card {
+    flex: 1;
+  }
+}
+
+.center {
+  flex: 9;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  > header {
+    display: flex;
+    flex-direction: row;
+    background: white;
+    border-radius: 0 0 13px 13px;
+    box-shadow: 0 1px 37px rgba(0, 177, 255, 0.16);
+    margin-bottom: 18px;
+
+    input {
+      flex: 1;
+      font-size: 1.1em;
+      font-family: Roboto;
+      font-weight: 200;
+      background: transparent;
+      border: none;
+      outline-width: 0;
+      padding: 0.8em 1.9em;
+      color: #979797;
+
+      &::placeholder {
+        opacity: 0.5;
+      }
+    }
+  }
+}
 </style>
