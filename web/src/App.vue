@@ -1,34 +1,26 @@
 <template>
   <div id="app">
-    <title>Cody - {{query}}</title>
+    <Sidebar />
 
-    <div class="left">
-      <Sidebar />
+    <div class="header-container">
+      <Header v-model="query" @input="search" />
     </div>
 
-    <div class="center">
-      <header>
-        <input type="text" placeholder="How do I ..." v-model="query" @input="search" />
-      </header>
-
-      <div class="content">
-        <transition appear name="card">
-          <Card v-if="showCard" :card="card" :key="card.title" />
-        </transition>
-
-        <transition name="hint">
-          <Hint v-if="!showCard" />
-        </transition>
-      </div>
-
-      <Footer />
+    <div class="content">
+      <transition appear name="content" mode="out-in">
+        <Card v-if="showCard" :card="card" :key="card.title" />
+        <Hint v-else />
+      </transition>
     </div>
 
-    <div class="right"></div>
+    <transition name="footer">
+      <Footer v-if="query != ''" />
+    </transition>
   </div>
 </template>
 
 <script>
+import Header from "./components/Header.vue";
 import Card from "./components/Card.vue";
 import Hint from "./components/Hint.vue";
 import Sidebar from "./components/Sidebar.vue";
@@ -38,7 +30,7 @@ import { debounce, isEmpty } from "lodash";
 
 export default {
   name: "app",
-  components: { Card, Hint, Sidebar, Footer },
+  components: { Card, Hint, Sidebar, Footer, Header },
   data() {
     return {
       query: "",
@@ -74,6 +66,15 @@ export default {
 </script>
 
 <style lang="scss">
+%center {
+  min-width: 540px;
+  width: 46%;
+  @media screen and (orientation: portrait) {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
 @font-face {
   font-family: Roboto;
   src: url("../assets/fonts/roboto.ttf");
@@ -84,89 +85,49 @@ export default {
   src: url("../assets/fonts/firaCode.woff2");
 }
 
-html,
-body,
-#app {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+body {
   background: #f8f6f6;
+  margin: 0;
+  position: relative;
+}
+
+html,
+body {
+  min-height: 100vh;
 }
 
 #app {
+  padding: 4em 0 6em 0;
+  overflow-x: hidden;
+}
+
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: row;
-  align-items: stretch;
-
-  .left,
-  .right {
-    flex: 4;
+  justify-content: center;
+  z-index: 10;
+  .header {
+    @extend %center;
   }
+}
+
+.sidebar {
+  position: fixed;
+  top: 60px;
+  left: 80px;
 
   @media screen and (orientation: portrait) {
-    .left,
-    .right {
-      visibility: hidden;
-    }
-  }
-
-  .center {
-    flex: 9;
-  }
-}
-
-.left {
-  padding: 40px 0 0 40px;
-}
-
-.center {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  .content {
-    flex: 1;
-  }
-}
-
-.center > header {
-  display: flex;
-  flex-direction: row;
-  background: white;
-  border-radius: 0 0 8px 8px;
-  box-shadow: 0 1px 37px rgba(0, 177, 255, 0.16);
-  margin-bottom: 18px;
-
-  input {
-    flex: 1;
-    font-size: 1.1em;
-    font-family: Roboto;
-    font-weight: 200;
-    background: transparent;
-    border: none;
-    outline-width: 0;
-    padding: 0.8em 1.9em;
-    color: #979797;
-
-    &::placeholder {
-      opacity: 0.5;
-    }
+    display: none;
   }
 }
 
 .content {
-  position: relative;
-  flex: 1;
-  .card,
-  .hint {
-    position: absolute;
-  }
-  .card {
-    top: 0;
-  }
-  .hint {
-    top: 20%;
-  }
+  @extend %center;
+  margin: 0 auto;
 }
 
 .card,
@@ -175,61 +136,37 @@ body,
   box-sizing: border-box;
 }
 
-.card {
-  overflow: hidden;
-  font-size: 1vw;
+.footer {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 
-.hint {
-  transform: rotate(-6deg);
-  font-size: 1vw;
+.content .hint {
+  transform: rotate(-12deg);
+  margin-top: 10vh;
 }
 
 .content {
-  .card {
-    z-index: 2;
-  }
-  .hint {
-    z-index: 1;
+  &-enter {
+    opacity: 0.7;
+    &-to {
+      opacity: 1;
+    }
+    &-active {
+      transition: all 0.1s ease-in-out;
+    }
   }
 }
 
 .footer {
-  padding: 4px;
-  text-align: center;
-  opacity: 0.7;
-  font-size: 0.9em;
-}
-
-.card {
   &-enter {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(10px);
     &-to {
-      opacity: 1;
       transform: translateY(0);
-    }
-    &-active {
-      transition: all 0.1s ease-in-out;
-    }
-  }
-  &-leave {
-    opacity: 1;
-    transform: translateY(0);
-    &-to {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    &-active {
-      transition: all 0.1s ease-in-out;
-    }
-  }
-}
-
-.hint {
-  &-enter {
-    opacity: 0;
-    &-to {
       opacity: 1;
     }
     &-active {
@@ -237,8 +174,10 @@ body,
     }
   }
   &-leave {
+    transform: translateY(0);
     opacity: 1;
     &-to {
+      transform: translateY(10px);
       opacity: 0;
     }
     &-active {
