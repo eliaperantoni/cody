@@ -1,28 +1,30 @@
 <template>
   <div id="app">
+    <title>Cody - {{query}}</title>
 
     <div class="left">
-      <Sidebar class="sidebar"/>
+      <Sidebar />
     </div>
 
     <div class="center">
       <header>
-        <input type="text" placeholder="Type here to search" v-model="query" @input="search" />
+        <input type="text" placeholder="How do I ..." v-model="query" @input="search" />
       </header>
 
       <div class="content">
         <transition appear name="card">
-          <Card v-if="showCard" class="card" :card="card" :key="card.title" />
+          <Card v-if="showCard" :card="card" :key="card.title" />
         </transition>
 
         <transition name="hint">
-          <Hint v-if="!showCard" class="hint" />
+          <Hint v-if="!showCard" />
         </transition>
       </div>
+
+      <Footer />
     </div>
 
     <div class="right"></div>
-
   </div>
 </template>
 
@@ -30,12 +32,13 @@
 import Card from "./components/Card.vue";
 import Hint from "./components/Hint.vue";
 import Sidebar from "./components/Sidebar.vue";
+import Footer from "./components/Footer.vue";
 import axios from "axios";
 import { debounce, isEmpty } from "lodash";
 
 export default {
   name: "app",
-  components: { Card, Hint, Sidebar },
+  components: { Card, Hint, Sidebar, Footer },
   data() {
     return {
       query: "",
@@ -166,17 +169,20 @@ body,
   }
 }
 
-.card, .hint {
+.card,
+.hint {
   width: 100%;
   box-sizing: border-box;
 }
 
 .card {
   overflow: hidden;
+  font-size: 1vw;
 }
 
 .hint {
   transform: rotate(-6deg);
+  font-size: 1vw;
 }
 
 .content {
@@ -186,6 +192,13 @@ body,
   .hint {
     z-index: 1;
   }
+}
+
+.footer {
+  padding: 4px;
+  text-align: center;
+  opacity: 0.7;
+  font-size: 0.9em;
 }
 
 .card {

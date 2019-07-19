@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="sidebar">
     <header>
       <img
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/1024px-Google_%22G%22_Logo.svg.png"
@@ -49,15 +49,15 @@ header {
     display: flex;
     flex-direction: row;
     align-items: center;
+    img {
+        height: 40px;
+        width: auto;
+    }
     span {
         font-family: "Fira Code";
         color: rgb(59, 59, 59);
         font-size: 1.8em;
-        margin-left: 4px;
-    }
-    img {
-        height: 40px;
-        width: auto;
+        margin-left: 10px;
     }
 }
 
@@ -72,7 +72,6 @@ li {
     font-family: "Fira Code";
     font-size: 1.2em;
     font-weight: 500;
-    color: rgb(59, 59, 59);
     &:hover {
       text-decoration: underline;
     }
@@ -81,8 +80,12 @@ li {
   &:before {
     content: "►";
     margin-right: 6px;
-    font-size: 0.8rem;
-    vertical-align: 0.2rem;
+    font-size: 0.8em;
+    vertical-align: 0.2em;
+  }
+
+  span, &:before {
+    color: rgb(92, 92, 92);
   }
 }
 
