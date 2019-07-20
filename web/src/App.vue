@@ -50,6 +50,7 @@ export default {
         title: `Delete Slice Element by Index ${Math.random()}`,
         breads: ["Programming Languages", "Go", "Slices"]
       };
+      window.scrollTo(0, 0);
     }, 150)
   },
   computed: {
@@ -99,6 +100,7 @@ body {
 #app {
   padding: 4em 0 6em 0;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 .header-container {
