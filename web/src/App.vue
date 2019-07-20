@@ -9,11 +9,12 @@
     </div>
 
     <div class="content">
-      <transition appear name="content" mode="out-in">
+      <transition appear name="content">
         <Card v-if="showCard" :card="card" :key="card.title" />
-        <Hint v-else />
       </transition>
     </div>
+
+    <Hint v-if="!showCard"/>
 
     <transition appear name="next">
       <div v-if="showCard" class="next">►</div>
@@ -101,15 +102,26 @@ $center-width: 46%;
 body {
   background: #f8f6f6;
   margin: 0;
+
+  // Necessary for the footer
+  // to always be on the bottom
+  // of the page, even when the
+  // page is shorter than the viewport
   position: relative;
 }
 
 html,
 body,
 #app {
+  // Necessary for the footer
+  // to always be on the bottom
+  // of the page, even when the
+  // page is shorter than the viewport
   min-height: 100vh;
-  overflow-x: hidden;
   scroll-behavior: smooth;
+  // Makes sure that nothing
+  // overflows the viewport
+  overflow-x: hidden;
 }
 
 .header-container {
@@ -148,9 +160,14 @@ body,
   box-sizing: border-box;
 }
 
-.content .hint {
+.hint {
+  position: fixed;
+  top: 24vh;
   transform: rotate(-12deg);
-  margin-top: 10vh;
+  font-size: 3vw;
+  @media screen and (min-width: 1000px) {
+    font-size: 1em;
+  }
   p {
     padding: 0;
   }
@@ -190,10 +207,14 @@ body,
 }
 
 .header-container {
-  z-index: 2;
+  z-index: 3;
 }
 
 .content {
+  z-index: 2;
+}
+
+.hint {
   z-index: 1;
 }
 
