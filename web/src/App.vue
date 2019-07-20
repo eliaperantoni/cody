@@ -199,7 +199,7 @@ body,
 
   left: $center-width + (100% - $center-width) * 1/ 2;
   @media screen and (max-width: $center-min-width * (1 / 0.46)) {
-    left: calc($center-min-width + (100% - $center-min-width) / 2);
+    left: calc(#{$center-min-width} + (100% - #{$center-min-width}) / 2);
   }
   @media screen and (orientation: portrait) {
     display: none;
