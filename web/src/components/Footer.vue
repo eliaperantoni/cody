@@ -14,6 +14,7 @@ export default {
 
 <style lang="scss" scoped>
 .footer {
+    user-select: none;
     font-family: "Fira Code";
     color: rgb(122, 122, 122);
     span.love {

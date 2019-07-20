@@ -8,20 +8,27 @@
       <Header v-model="query" @input="search" />
     </div>
 
-    <div class="content">
-      <transition appear name="content">
+    <div class="content" id="content">
+      <transition
+        appear
+        name="card"
+        @after-leave="updateContentHeight"
+        @enter="updateContentHeight"
+      >
         <Card v-if="showCard" :card="card" :key="card.title" />
       </transition>
     </div>
 
-    <Hint v-if="!showCard"/>
+    <transition appear name="hint">
+      <Hint v-if="!showCard" />
+    </transition>
 
     <transition appear name="next">
       <div v-if="showCard" class="next">►</div>
     </transition>
 
     <transition name="footer">
-      <Footer v-if="query != ''" />
+      <Footer v-if="showCard" />
     </transition>
   </div>
 </template>
@@ -58,7 +65,22 @@ export default {
         breads: ["Programming Languages", "Go", "Slices"]
       };
       window.scrollTo(0, 0);
-    }, 150)
+    }, 150),
+    updateContentHeight() {
+      let heights = ["12em"];
+
+      const card = document.getElementsByClassName("card")[0];
+
+      if (card !== undefined) {
+        heights.push(`${card.clientHeight}px`);
+      }
+
+      const heightStr = `calc(${heights.join(" + ")})`;
+      console.log(heightStr);
+
+      const content = document.getElementById("content");
+      content.style.height = heightStr;
+    }
   },
   computed: {
     showCard() {
@@ -149,9 +171,15 @@ body,
 
 .content {
   @extend %center;
-  position: relative;
   margin: 0 auto;
-  padding: 4em 0 6em 0;
+}
+
+.content {
+  position: relative;
+  .card {
+    position: absolute;
+    top: 4em;
+  }
 }
 
 .card,
@@ -165,6 +193,8 @@ body,
   top: 24vh;
   transform: rotate(-12deg);
   font-size: 3vw;
+  user-select: none;
+
   @media screen and (min-width: 1000px) {
     font-size: 1em;
   }
@@ -175,6 +205,10 @@ body,
 
 .next {
   $height: 100px;
+
+  @mixin shadow($opacity, $blur) {
+    box-shadow: 1px 2px $blur rgba(0, 191, 255, $opacity);
+  }
 
   border-radius: 0 14px 14px 0;
   height: $height;
@@ -187,6 +221,7 @@ body,
   text-align: center;
   user-select: none;
   transform-origin: top left;
+  transition: filter 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 
   cursor: pointer;
 
@@ -195,7 +230,12 @@ body,
     rgb(0, 162, 255) 0%,
     deepskyblue 100%
   );
-  box-shadow: 1px 2px 12px rgba(0, 191, 255, 0.6);
+
+  @include shadow(0.6, 12px);
+  &:hover {
+    filter: saturate(2);
+    @include shadow(0.9, 18px);
+  }
 
   left: $center-width + (100% - $center-width) * 1/ 2;
   @media screen and (max-width: $center-min-width * (1 / 0.46)) {
@@ -207,6 +247,10 @@ body,
 }
 
 .header-container {
+  z-index: 4;
+}
+
+.footer {
   z-index: 3;
 }
 
@@ -230,14 +274,30 @@ body,
   text-align: center;
 }
 
-.content {
+.card {
   &-enter {
-    opacity: 0.7;
+    opacity: 0.2;
+    transform: translateY(-20px);
     &-to {
+      transform: none;
       opacity: 1;
     }
+
     &-active {
-      transition: all 0.1s ease-in-out;
+      transition: all 0.1s ease-out;
+    }
+  }
+  &-leave {
+    transform: none;
+    opacity: 1;
+
+    &-to {
+      transform: translateY(50px);
+      opacity: 0.2;
+    }
+
+    &-active {
+      transition: all 0.1s ease-in;
     }
   }
 }
@@ -246,12 +306,42 @@ body,
   &-enter {
     opacity: 0.4;
     transform: scaleX(0.5);
+
     &-to {
       transform: none;
       opacity: 1;
     }
+
     &-active {
-      transition: all .2s ease-out;
+      transition: all 0.2s ease-out;
+    }
+  }
+  &-leave {
+    opacity: 1;
+    transform: none;
+
+    &-to {
+      transform: translateY(50px) scaleX(0.5);
+      opacity: 0.2;
+    }
+
+    &-active {
+      transition: all 0.1s ease-in;
+    }
+  }
+}
+
+.hint {
+  &-enter {
+    opacity: 0;
+
+    &-to {
+      opacity: 1;
+    }
+
+    &-active {
+      transition: all 0.3s ease-out;
+      transition-delay: .1s;
     }
   }
 }
@@ -260,21 +350,28 @@ body,
   &-enter {
     opacity: 0;
     transform: translateY(10px);
+
     &-to {
       transform: none;
       opacity: 1;
     }
+
     &-active {
+      
       transition: all 0.1s ease-in-out;
+      transition-delay: .2s;
     }
   }
+
   &-leave {
     transform: none;
     opacity: 1;
+
     &-to {
       transform: translateY(10px);
       opacity: 0;
     }
+
     &-active {
       transition: all 0.1s ease-in-out;
     }
