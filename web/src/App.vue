@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <title v-text="title" />
+
     <Sidebar />
 
     <div class="header-container">
@@ -12,6 +14,10 @@
         <Hint v-else />
       </transition>
     </div>
+
+    <transition appear name="next">
+      <div v-if="showCard" class="next">►</div>
+    </transition>
 
     <transition name="footer">
       <Footer v-if="query != ''" />
@@ -56,6 +62,9 @@ export default {
   computed: {
     showCard() {
       return !isEmpty(this.card);
+    },
+    title() {
+      return this.showCard ? this.card.title : "Cody";
     }
   },
   mounted() {
@@ -67,9 +76,12 @@ export default {
 </script>
 
 <style lang="scss">
+$center-min-width: 540px;
+$center-width: 46%;
+
 %center {
-  min-width: 540px;
-  width: 46%;
+  min-width: $center-min-width;
+  width: $center-width;
   @media screen and (orientation: portrait) {
     width: 100%;
     min-width: auto;
@@ -93,12 +105,9 @@ body {
 }
 
 html,
-body {
-  min-height: 100vh;
-}
-
+body,
 #app {
-  padding: 4em 0 6em 0;
+  min-height: 100vh;
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
@@ -111,7 +120,6 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  z-index: 10;
   .header {
     @extend %center;
   }
@@ -129,7 +137,9 @@ body {
 
 .content {
   @extend %center;
+  position: relative;
   margin: 0 auto;
+  padding: 4em 0 6em 0;
 }
 
 .card,
@@ -138,17 +148,65 @@ body {
   box-sizing: border-box;
 }
 
+.content .hint {
+  transform: rotate(-12deg);
+  margin-top: 10vh;
+  p {
+    padding: 0;
+  }
+}
+
+.next {
+  $height: 100px;
+
+  border-radius: 0 14px 14px 0;
+  height: $height;
+  width: 50px;
+  position: fixed;
+  top: 100px;
+  color: white;
+  font-size: 1.3em;
+  line-height: $height; // Makes arrow vertically centered
+  text-align: center;
+  user-select: none;
+  transform-origin: top left;
+
+  cursor: pointer;
+
+  background: linear-gradient(
+    to top left,
+    rgb(0, 162, 255) 0%,
+    deepskyblue 100%
+  );
+  box-shadow: 1px 2px 12px rgba(0, 191, 255, 0.6);
+
+  left: $center-width + (100% - $center-width) * 1/ 2;
+  @media screen and (max-width: $center-min-width * (1 / 0.46)) {
+    left: calc($center-min-width + (100% - $center-min-width) / 2);
+  }
+  @media screen and (orientation: portrait) {
+    display: none;
+  }
+}
+
+.header-container {
+  z-index: 2;
+}
+
+.content {
+  z-index: 1;
+}
+
+.next {
+  z-index: 0;
+}
+
 .footer {
   position: absolute;
   bottom: 24px;
   left: 0;
   right: 0;
   text-align: center;
-}
-
-.content .hint {
-  transform: rotate(-12deg);
-  margin-top: 10vh;
 }
 
 .content {
@@ -163,12 +221,26 @@ body {
   }
 }
 
+.next {
+  &-enter {
+    opacity: 0.4;
+    transform: scaleX(0.5);
+    &-to {
+      transform: none;
+      opacity: 1;
+    }
+    &-active {
+      transition: all .2s ease-out;
+    }
+  }
+}
+
 .footer {
   &-enter {
     opacity: 0;
     transform: translateY(10px);
     &-to {
-      transform: translateY(0);
+      transform: none;
       opacity: 1;
     }
     &-active {
@@ -176,7 +248,7 @@ body {
     }
   }
   &-leave {
-    transform: translateY(0);
+    transform: none;
     opacity: 1;
     &-to {
       transform: translateY(10px);
