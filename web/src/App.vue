@@ -9,22 +9,17 @@
     </div>
 
     <div class="content" id="content">
-      <transition
-        appear
-        name="card"
-        @after-leave="cardChanged"
-        @enter="cardChanged"
-      >
+      <transition appear @enter="animeCardEnter" @leave="animeCardLeave">
         <Card v-if="showCard" :card="card" :key="card.title" />
       </transition>
     </div>
 
-    <transition appear name="arrowLeft">
-      <div v-if="showArrowLeft" @click="cardIndex--" class="arrow left">►</div>
+    <transition appear @enter="animeArrowEnter" @leave="animeArrowLeave">
+      <div v-if="showArrowLeft" @click="arrowLeft" class="arrow left">◄</div>
     </transition>
 
-    <transition appear name="arrowRight">
-      <div v-if="showArrowRight" @click="cardIndex++" class="arrow right">►</div>
+    <transition appear @enter="animeArrowEnter" @leave="animeArrowLeave">
+      <div v-if="showArrowRight" @click="arrowRight" class="arrow right">►</div>
     </transition>
 
     <transition appear name="hint">
@@ -44,6 +39,7 @@ import Hint from "./components/Hint.vue";
 import Sidebar from "./components/Sidebar.vue";
 import Footer from "./components/Footer.vue";
 import axios from "axios";
+import anime from "animejs";
 import { debounce, isEmpty } from "lodash";
 
 export default {
@@ -53,11 +49,15 @@ export default {
     return {
       query: "",
       cards: [],
-      cardIndex: 0
+      cardIndex: 0,
+
+      anime: "contextSwitch"
     };
   },
   methods: {
     search: debounce(async function() {
+      this.anime = "contextSwitch";
+
       if (this.query === "") {
         this.cards = [];
       } else {
@@ -67,20 +67,19 @@ export default {
         this.cards = res.data;
       }
 
+      this.scrollToTop();
       this.cardIndex = 0;
-    }, 150),
+    }, 100),
     // This function makes it possible to have cards positioned
     // absolutely inside their container so that we can have
     // cool animations. The problem with absolutely positioned
     // elements is that their size is not taken into account
     // when positioning other elements. This function forces
     // the container div to take the height of its content.
-    updateContentHeight() {
+    updateContentHeight(card) {
       let heights = ["12em"];
 
-      const card = document.getElementsByClassName("card")[0];
-
-      if (card !== undefined) {
+      if (card !== null) {
         heights.push(`${card.clientHeight}px`);
       }
 
@@ -89,9 +88,104 @@ export default {
       const content = document.getElementById("content");
       content.style.height = heightStr;
     },
-    cardChanged() {
+    arrowRight() {
+      this.anime = "right";
+      this.cardIndex++;
+      this.scrollToTop();
+    },
+    arrowLeft() {
+      this.anime = "left";
+      this.cardIndex--;
+      this.scrollToTop();
+    },
+    scrollToTop() {
       window.scrollTo(0, 0);
-      this.updateContentHeight();
+    },
+    animeCardEnter(el, done) {
+      let anim;
+      switch (this.anime) {
+        case "contextSwitch":
+          anim = {
+            translateY: [-20, 0],
+            opacity: [0.4, 1]
+          };
+          break;
+        case "right":
+          anim = {
+            translateX: [20, 0],
+            opacity: [0.7, 1]
+          };
+          break;
+        case "left":
+          anim = {
+            translateX: [-20, 0],
+            opacity: [0.7, 1]
+          };
+          break;
+      }
+      anime({
+        targets: el,
+        duration: 100,
+        easing: "easeOutQuad",
+        complete: () => {
+          this.updateContentHeight(el);
+          done();
+        },
+        ...anim
+      });
+      done();
+    },
+    animeCardLeave(el, done) {
+      if (this.anime != "contextSwitch") {
+        done();
+        return;
+      }
+      anime({
+        targets: el,
+        opacity: [1, 0],
+        duration: 100,
+        easing: "easeInQuad",
+        translateY: [0, 40],
+        complete: () => {
+          if (!this.showCard) this.updateContentHeight(null);
+          done();
+        }
+      });
+    },
+    animeArrowEnter(el, done) {
+      anime({
+        targets: el,
+        opacity: [0.4, 1],
+        duration: 100,
+        easing: "easeOutQuad",
+        complete: done,
+        scaleX: [0.5, 1]
+      });
+    },
+    animeArrowLeave(el, done) {
+      let anim;
+      switch (this.anime) {
+        case "contextSwitch":
+          anim = {
+            translateY: [0, 40],
+            scaleX: [1, 0.5]
+          };
+          break;
+        case "right":
+        case "left":
+          anim = {
+            scaleX: [1, 0.5]
+          };
+          break;
+      }
+      anime({
+        targets: el,
+        opacity: [1, 0],
+        duration: 100,
+        easing: "easeInQuad",
+        complete: done,
+        ...anim
+      });
     }
   },
   computed: {
@@ -225,7 +319,6 @@ body,
     box-shadow: 1px 2px $blur rgba(0, 191, 255, $opacity);
   }
 
-  border-radius: 0 14px 14px 0;
   height: $height;
   width: $width;
   position: fixed;
@@ -235,7 +328,6 @@ body,
   line-height: $height; // Makes arrow vertically centered
   text-align: center;
   user-select: none;
-  transform-origin: top left;
   transition: filter 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 
   cursor: pointer;
@@ -257,6 +349,8 @@ body,
   }
 
   &.right {
+    border-radius: 0 14px 14px 0;
+    transform-origin: top left;
     left: $side-width + $center-width;
     @media screen and (max-width: $max-width-before-fixed) {
       left: calc((100% - #{$center-min-width}) / 2 + #{$center-min-width});
@@ -264,6 +358,8 @@ body,
   }
 
   &.left {
+    border-radius: 14px 0 0 14px;
+    transform-origin: top right;
     left: calc(#{$side-width} - #{$width});
     @media screen and (max-width: $max-width-before-fixed) {
       left: calc((100% - #{$center-min-width}) / 2 - #{$width});

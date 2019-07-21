@@ -10,7 +10,9 @@
         </nav>
 
         <h1>{{card.title}}</h1>
-        <p>{{card.content}}{{card.content}}{{card.content}}{{card.content}}{{card.content}}{{card.content}}{{card.content}}</p>
+        <p>{{card.content}}</p>
+        <p class="danger">{{card.content}}</p>
+        <p>{{card.content}}</p>
       </header>
     </div>
   </div>
@@ -81,5 +83,10 @@ h1 {
 p {
   font-family: "Fira Code";
   color: #3d3d3d;
+  &.danger {
+    background: rgba(255, 0, 0, 0.253);
+    padding: 18px;
+    border-left: 8px solid red;
+  }
 }
 </style>
