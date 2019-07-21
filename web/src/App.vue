@@ -48,24 +48,28 @@ export default {
   data() {
     return {
       query: "",
-      card: {
-        title: `Delete Slice Element by Index ${Math.random()}`,
-        breads: ["Programming Languages", "Go", "Slices"]
-      }
+      cards: [],
+      cardIndex: 0,
     };
   },
   methods: {
-    search: debounce(function() {
+    search: debounce(async function() {
       if (this.query === "") {
-        this.card = {};
-        return;
+        this.cards = [];
+      } else {
+        let res = await axios.get(`http://localhost:5000/search?q=${this.query}`);
+        this.cards = res.data;
       }
-      this.card = {
-        title: `Delete Slice Element by Index ${Math.random()}`,
-        breads: ["Programming Languages", "Go", "Slices"]
-      };
+
+      this.cardIndex = 0;
       window.scrollTo(0, 0);
     }, 150),
+    // This function makes it possible to have cards positioned
+    // absolutely inside their container so that we can have
+    // cool animations. The problem with absolutely positioned
+    // elements is that their size is not taken into account
+    // when positioning other elements. This function forces
+    // the container div to take the height of its content.
     updateContentHeight() {
       let heights = ["12em"];
 
@@ -76,15 +80,17 @@ export default {
       }
 
       const heightStr = `calc(${heights.join(" + ")})`;
-      console.log(heightStr);
 
       const content = document.getElementById("content");
       content.style.height = heightStr;
     }
   },
   computed: {
+    card() {
+      return this.cards[this.cardIndex];
+    },
     showCard() {
-      return !isEmpty(this.card);
+      return this.card != undefined;
     },
     title() {
       return this.showCard ? this.card.title : "Cody";
