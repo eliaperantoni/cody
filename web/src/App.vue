@@ -12,19 +12,23 @@
       <transition
         appear
         name="card"
-        @after-leave="updateContentHeight"
-        @enter="updateContentHeight"
+        @after-leave="cardChanged"
+        @enter="cardChanged"
       >
         <Card v-if="showCard" :card="card" :key="card.title" />
       </transition>
     </div>
 
-    <transition appear name="hint">
-      <Hint v-if="!showCard" />
+    <transition appear name="arrowLeft">
+      <div v-if="showArrowLeft" @click="cardIndex--" class="arrow left">►</div>
     </transition>
 
-    <transition appear name="next">
-      <div v-if="showCard" class="next">►</div>
+    <transition appear name="arrowRight">
+      <div v-if="showArrowRight" @click="cardIndex++" class="arrow right">►</div>
+    </transition>
+
+    <transition appear name="hint">
+      <Hint v-if="!showCard" />
     </transition>
 
     <transition name="footer">
@@ -49,7 +53,7 @@ export default {
     return {
       query: "",
       cards: [],
-      cardIndex: 0,
+      cardIndex: 0
     };
   },
   methods: {
@@ -57,12 +61,13 @@ export default {
       if (this.query === "") {
         this.cards = [];
       } else {
-        let res = await axios.get(`http://localhost:5000/search?q=${this.query}`);
+        let res = await axios.get(
+          `http://localhost:5000/search?q=${this.query}`
+        );
         this.cards = res.data;
       }
 
       this.cardIndex = 0;
-      window.scrollTo(0, 0);
     }, 150),
     // This function makes it possible to have cards positioned
     // absolutely inside their container so that we can have
@@ -83,6 +88,10 @@ export default {
 
       const content = document.getElementById("content");
       content.style.height = heightStr;
+    },
+    cardChanged() {
+      window.scrollTo(0, 0);
+      this.updateContentHeight();
     }
   },
   computed: {
@@ -94,6 +103,12 @@ export default {
     },
     title() {
       return this.showCard ? this.card.title : "Cody";
+    },
+    showArrowRight() {
+      return this.showCard && this.cardIndex != this.cards.length - 1;
+    },
+    showArrowLeft() {
+      return this.showCard && this.cardIndex != 0;
     }
   },
   mounted() {
@@ -107,6 +122,8 @@ export default {
 <style lang="scss">
 $center-min-width: 540px;
 $center-width: 46%;
+$side-width: (100% - $center-width) / 2;
+$max-width-before-fixed: $center-min-width * 100 / ($center-width / 1%);
 
 %center {
   min-width: $center-min-width;
@@ -146,10 +163,6 @@ body,
   // of the page, even when the
   // page is shorter than the viewport
   min-height: 100vh;
-  scroll-behavior: smooth;
-  // Makes sure that nothing
-  // overflows the viewport
-  overflow-x: hidden;
 }
 
 .header-container {
@@ -170,7 +183,7 @@ body,
   top: 60px;
   left: 80px;
 
-  @media screen and (orientation: portrait) {
+  @media screen and (max-width: 1300px) {
     display: none;
   }
 }
@@ -178,25 +191,20 @@ body,
 .content {
   @extend %center;
   margin: 0 auto;
-}
-
-.content {
   position: relative;
   .card {
     position: absolute;
     top: 4em;
+    width: 100%;
+    box-sizing: border-box;
   }
-}
-
-.card,
-.hint {
-  width: 100%;
-  box-sizing: border-box;
 }
 
 .hint {
   position: fixed;
   top: 24vh;
+  left: 0;
+  right: 0;
   transform: rotate(-12deg);
   font-size: 3vw;
   user-select: none;
@@ -209,8 +217,9 @@ body,
   }
 }
 
-.next {
+.arrow {
   $height: 100px;
+  $width: 50px;
 
   @mixin shadow($opacity, $blur) {
     box-shadow: 1px 2px $blur rgba(0, 191, 255, $opacity);
@@ -218,7 +227,7 @@ body,
 
   border-radius: 0 14px 14px 0;
   height: $height;
-  width: 50px;
+  width: $width;
   position: fixed;
   top: 100px;
   color: white;
@@ -243,12 +252,22 @@ body,
     @include shadow(0.9, 18px);
   }
 
-  left: $center-width + (100% - $center-width) * 1/ 2;
-  @media screen and (max-width: $center-min-width * (1 / 0.46)) {
-    left: calc(#{$center-min-width} + (100% - #{$center-min-width}) / 2);
-  }
   @media screen and (orientation: portrait) {
     display: none;
+  }
+
+  &.right {
+    left: $side-width + $center-width;
+    @media screen and (max-width: $max-width-before-fixed) {
+      left: calc((100% - #{$center-min-width}) / 2 + #{$center-min-width});
+    }
+  }
+
+  &.left {
+    left: calc(#{$side-width} - #{$width});
+    @media screen and (max-width: $max-width-before-fixed) {
+      left: calc((100% - #{$center-min-width}) / 2 - #{$width});
+    }
   }
 }
 
@@ -268,7 +287,7 @@ body,
   z-index: 1;
 }
 
-.next {
+.arrow {
   z-index: 0;
 }
 
@@ -278,6 +297,8 @@ body,
   left: 0;
   right: 0;
   text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .card {
@@ -308,35 +329,6 @@ body,
   }
 }
 
-.next {
-  &-enter {
-    opacity: 0.4;
-    transform: scaleX(0.5);
-
-    &-to {
-      transform: none;
-      opacity: 1;
-    }
-
-    &-active {
-      transition: all 0.2s ease-out;
-    }
-  }
-  &-leave {
-    opacity: 1;
-    transform: none;
-
-    &-to {
-      transform: translateY(50px) scaleX(0.5);
-      opacity: 0.2;
-    }
-
-    &-active {
-      transition: all 0.1s ease-in;
-    }
-  }
-}
-
 .hint {
   &-enter {
     opacity: 0;
@@ -347,7 +339,7 @@ body,
 
     &-active {
       transition: all 0.3s ease-out;
-      transition-delay: .1s;
+      transition-delay: 0.1s;
     }
   }
 }
@@ -363,9 +355,8 @@ body,
     }
 
     &-active {
-      
       transition: all 0.1s ease-in-out;
-      transition-delay: .2s;
+      transition-delay: 0.2s;
     }
   }
 

@@ -1,17 +1,19 @@
 <template>
-  <article class="card">
-    <header>
-      <nav>
-        <div v-for="(bread, i) in card.breads" :key="bread">
-          <span>{{bread}}</span>
-          <span v-if="i < card.breads.length - 1">&nbsp;&gt;&nbsp;</span>
-        </div>
-      </nav>
+  <div class="card">
+    <div class="wrapper">
+      <header>
+        <nav>
+          <div v-for="(bread, i) in card.breads" :key="bread">
+            <span>{{bread}}</span>
+            <span v-if="i < card.breads.length - 1">&nbsp;&gt;&nbsp;</span>
+          </div>
+        </nav>
 
-      <h1>{{card.title}}</h1>
-      <p></p>
-    </header>
-  </article>
+        <h1>{{card.title}}</h1>
+        <p>{{card.content}}{{card.content}}{{card.content}}{{card.content}}{{card.content}}{{card.content}}{{card.content}}</p>
+      </header>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -22,11 +24,28 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-article {
+.card {
   background: white;
   border-radius: 13px;
   box-shadow: 0 1px 37px rgba(0, 177, 255, 0.09);
-  padding: 2.6em;
+  overflow-x: hidden;
+  .wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2.6em;
+  }
+}
+
+.card {
+  h1,
+  p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 header {
@@ -57,5 +76,10 @@ h1 {
   color: #3d3d3d;
   margin: 0;
   margin-left: -0.04em;
+}
+
+p {
+  font-family: "Fira Code";
+  color: #3d3d3d;
 }
 </style>
