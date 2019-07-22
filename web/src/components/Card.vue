@@ -10,8 +10,10 @@
         </nav>
 
         <h1>{{card.title}}</h1>
-        <p>{{card.content}}</p>
         <p class="danger">{{card.content}}</p>
+        <p class="warning">{{card.content}}</p>
+        <p class="info">{{card.content}}</p>
+        <p class="success">{{card.content}}</p>
         <p>{{card.content}}</p>
       </header>
     </div>
@@ -81,12 +83,32 @@ h1 {
 }
 
 p {
+  $font-base-color: #3d3d3d;
   font-family: "Fira Code";
-  color: #3d3d3d;
-  &.danger {
-    background: rgba(255, 0, 0, 0.253);
+  color: $font-base-color;
+  &.danger, &.warning, &.info, &.success {
     padding: 18px;
-    border-left: 8px solid red;
+    color: darken($font-base-color, 10);
+  }
+  &.danger {
+    $base: rgba(255, 0, 98, 0.4);
+    background: $base;
+    border-left: 8px solid saturate($base, 40);
+  }
+  &.warning {
+    $base: rgba(255, 208, 0, 0.4);
+    background: $base;
+    border-left: 8px solid saturate($base, 40);
+  }
+  &.info {
+    $base: rgba(0, 183, 255, 0.4);
+    background: $base;
+    border-left: 8px solid saturate($base, 40);
+  }
+  &.success {
+    $base: rgba(0, 255, 0, 0.4);
+    background: $base;
+    border-left: 8px solid saturate($base, 40);
   }
 }
 </style>
