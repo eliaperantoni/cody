@@ -259,6 +259,10 @@ body,
   min-height: 100vh;
 }
 
+body {
+  overflow-y: scroll;
+}
+
 .header-container {
   position: fixed;
   top: 0;
