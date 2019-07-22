@@ -40,7 +40,7 @@ import Sidebar from "./components/Sidebar.vue";
 import Footer from "./components/Footer.vue";
 import axios from "axios";
 import anime from "animejs";
-import { debounce, isEmpty } from "lodash";
+import { debounce } from "lodash";
 
 export default {
   name: "app",

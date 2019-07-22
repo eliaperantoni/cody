@@ -25,7 +25,7 @@ export default {
   props: ["highlightedLink"],
   data() {
     return {
-      links: [
+      links: [/*
         {
           displayName: "Home",
           name: "home"
@@ -38,7 +38,7 @@ export default {
           displayName: "About",
           name: "about"
         }
-      ]
+      */]
     };
   }
 };

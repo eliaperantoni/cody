@@ -10,20 +10,34 @@
         </nav>
 
         <h1>{{card.title}}</h1>
-        <p class="danger">{{card.content}}</p>
-        <p class="warning">{{card.content}}</p>
-        <p class="info">{{card.content}}</p>
-        <p class="success">{{card.content}}</p>
-        <p>{{card.content}}</p>
       </header>
+
+      <div class="markdown" v-html="renderedContent" />
     </div>
   </div>
 </template>
 
 <script>
+import "../../assets/xonokai.css";
+
+import MarkdownIt from "markdown-it";
+import prism from "markdown-it-prism";
+
+console.log(prism);
+
+const md = new MarkdownIt({
+  html: true,
+  linkify: true
+}).use(prism);
+
 export default {
   name: "card",
-  props: ["card"]
+  props: ["card"],
+  computed: {
+    renderedContent() {
+      return md.render(this.card.content);
+    }
+  }
 };
 </script>
 
@@ -44,12 +58,10 @@ export default {
   }
 }
 
-.card {
-  h1,
-  p {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+h1,
+p {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 header {
@@ -82,33 +94,51 @@ h1 {
   margin-left: -0.04em;
 }
 
-p {
+.markdown::v-deep {
+  width: 100%;
+  word-wrap: break-word;
   $font-base-color: #3d3d3d;
   font-family: "Fira Code";
   color: $font-base-color;
-  &.danger, &.warning, &.info, &.success {
-    padding: 18px;
-    color: darken($font-base-color, 10);
-  }
-  &.danger {
-    $base: rgba(255, 0, 98, 0.4);
+  font-size: 1.2em;
+  p code {
+    $base: #1d1f21;
     background: $base;
-    border-left: 8px solid saturate($base, 40);
+    color: white;
+    border-radius: 6px;
+    padding: 1px 2px 1px 2px;
   }
-  &.warning {
-    $base: rgba(255, 208, 0, 0.4);
-    background: $base;
-    border-left: 8px solid saturate($base, 40);
+  pre code {
+    width: 100%;
   }
-  &.info {
-    $base: rgba(0, 183, 255, 0.4);
-    background: $base;
-    border-left: 8px solid saturate($base, 40);
-  }
-  &.success {
-    $base: rgba(0, 255, 0, 0.4);
-    background: $base;
-    border-left: 8px solid saturate($base, 40);
+  * {
+    &.danger,
+    &.warning,
+    &.info,
+    &.success {
+      padding: 18px;
+      color: darken($font-base-color, 10);
+    }
+    &.danger {
+      $base: rgba(255, 0, 98, 0.4);
+      background: $base;
+      border-left: 8px solid saturate($base, 40);
+    }
+    &.warning {
+      $base: rgba(255, 208, 0, 0.4);
+      background: $base;
+      border-left: 8px solid saturate($base, 40);
+    }
+    &.info {
+      $base: rgba(0, 183, 255, 0.4);
+      background: $base;
+      border-left: 8px solid saturate($base, 40);
+    }
+    &.success {
+      $base: rgba(0, 255, 0, 0.4);
+      background: $base;
+      border-left: 8px solid saturate($base, 40);
+    }
   }
 }
 </style>
