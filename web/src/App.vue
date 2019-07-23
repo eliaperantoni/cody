@@ -54,6 +54,33 @@ export default {
       anime: "contextSwitch"
     };
   },
+  computed: {
+    card() {
+      return this.cards[this.cardIndex];
+    },
+    showCard() {
+      return this.card != undefined;
+    },
+    title() {
+      return this.showCard ? this.card.title : "Cody";
+    },
+    showArrowRight() {
+      return this.showCard && this.cardIndex != this.cards.length - 1;
+    },
+    showArrowLeft() {
+      return this.showCard && this.cardIndex != 0;
+    }
+  },
+  created() {
+    if (window.injected != undefined) {
+      this.cards = [window.injected];
+    }
+
+    window.onpopstate = event => {
+      Object.assign(this, event.state);
+    };
+    this.updateHistory();
+  },
   methods: {
     search: debounce(async function() {
       this.anime = "contextSwitch";
@@ -69,6 +96,8 @@ export default {
 
       this.scrollToTop();
       this.cardIndex = 0;
+
+      this.updateHistory();
     }, 100),
     // This function makes it possible to have cards positioned
     // absolutely inside their container so that we can have
@@ -88,15 +117,29 @@ export default {
       const content = document.getElementById("content");
       content.style.height = heightStr;
     },
+    updateHistory() {
+      const data = this.$data;
+      if (this.card == null) {
+        window.history.pushState(data, `Index`, `/`);
+      } else {
+        window.history.pushState(
+          data,
+          `Card ${this.card.id}`,
+          `/card/${this.card.id}`
+        );
+      }
+    },
     arrowRight() {
       this.anime = "right";
       this.cardIndex++;
       this.scrollToTop();
+      this.updateHistory();
     },
     arrowLeft() {
       this.anime = "left";
       this.cardIndex--;
       this.scrollToTop();
+      this.updateHistory();
     },
     scrollToTop() {
       window.scrollTo(0, 0);
@@ -186,28 +229,6 @@ export default {
         complete: done,
         ...anim
       });
-    }
-  },
-  computed: {
-    card() {
-      return this.cards[this.cardIndex];
-    },
-    showCard() {
-      return this.card != undefined;
-    },
-    title() {
-      return this.showCard ? this.card.title : "Cody";
-    },
-    showArrowRight() {
-      return this.showCard && this.cardIndex != this.cards.length - 1;
-    },
-    showArrowLeft() {
-      return this.showCard && this.cardIndex != 0;
-    }
-  },
-  mounted() {
-    if (window.injected != undefined) {
-      this.cards = [window.injected];
     }
   }
 };
