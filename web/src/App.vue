@@ -207,7 +207,7 @@ export default {
   },
   mounted() {
     if (window.injected != undefined) {
-      this.card = window.injected;
+      this.cards = [window.injected];
     }
   }
 };
