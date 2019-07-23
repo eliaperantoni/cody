@@ -18,17 +18,13 @@
 </template>
 
 <script>
-import "../../assets/xonokai.css";
-
+import "../../assets/monokai-sublime.css";
 import MarkdownIt from "markdown-it";
-import prism from "markdown-it-prism";
-
-console.log(prism);
 
 const md = new MarkdownIt({
   html: true,
   linkify: true
-}).use(prism);
+}).use(require('markdown-it-highlightjs'), {});
 
 export default {
   name: "card",
@@ -102,11 +98,11 @@ h1 {
   color: $font-base-color;
   font-size: 1.2em;
   p code {
-    $base: #1d1f21;
-    background: $base;
-    color: white;
-    border-radius: 6px;
-    padding: 1px 2px 1px 2px;
+    background: rgb(198, 234, 255);
+    color: rgb(2, 155, 216);
+    border: 1px solid rgb(105, 195, 255);
+    border-radius: 4px;
+    padding: 1px 4px 1px 4px;
   }
   pre code {
     width: 100%;
