@@ -1,23 +1,26 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
-	"flag"
-	"encoding/json"
+
+	"github.com/gorilla/mux"
 )
 
 //
 //STRUCT
 //
-type Article struct{
-	Title string `json:"title"`
-	Desc string `json:"desc"`
+type Article struct {
+	Title   string `json:"title"`
+	Desc    string `json:"desc"`
 	Content string `json:"content"`
 }
 
 type Articles []Article
+
 var (
 	flagPort = flag.String("port", "8000", "Port to listen on")
 )
@@ -26,36 +29,39 @@ var (
 // FUNCTION
 // FUNCTION
 
-func allArticles(w http.ResponseWriter, r *http.Request){
+func allArticles(w http.ResponseWriter, r *http.Request) {
+	log.Println("articles")
 	articles := Articles{
-		Article{Title:"test",Desc:"TEST",Content:"CISO"},
+		Article{Title: "test", Desc: "TEST", Content: "CISO"},
 	}
 	if r.Method == "GET" {
-		json.NewEncoder(w).Encode(articles)	
+		json.NewEncoder(w).Encode(articles)
 		//////fmt.Fprint(w, "GE done")
 	} else {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 	}
 }
 
-func Index(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintf(w,"index hit")
+func Index(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "index hit")
+	log.Println("Index")
 }
 
 func init() {
 	log.SetPrefix("LOG: ")
-    log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
-    log.Println("started")
+	log.SetFlags(log.Ldate | log.Lmicroseconds)
+	log.Println("init")
 	flag.Parse()
 }
-func handleRequests(){
+func handleRequests() {
+	myRouter := mux.NewRouter()
 
-	http.HandleFunc("/",Index)
-	http.HandleFunc("/articles",allArticles)
-	log.Fatal(http.ListenAndServe(":"+*flagPort,nil))
+	myRouter.HandleFunc("/", Index)
+	myRouter.HandleFunc("/articles", allArticles)
+	log.Fatal(http.ListenAndServe(":"+*flagPort, myRouter))
 }
 
 //MAIN
-func main(){
+func main() {
 	handleRequests()
 }
