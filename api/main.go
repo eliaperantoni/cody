@@ -1,67 +1,63 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 
+	"./conn"
+	"github.com/blevesearch/bleve"
 	"github.com/gorilla/mux"
 )
 
-//
-//STRUCT
-//
-type Article struct {
-	Title   string `json:"title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
-}
+var idx bleve.Index
 
-type Articles []Article
-
-var (
-	flagPort = flag.String("port", "8000", "Port to listen on")
-)
-
-// FUNCTION
-// FUNCTION
-// FUNCTION
-
-func allArticles(w http.ResponseWriter, r *http.Request) {
-	log.Println("articles")
-	articles := Articles{
-		Article{Title: "test", Desc: "TEST", Content: "CISO"},
-	}
-	if r.Method == "GET" {
-		json.NewEncoder(w).Encode(articles)
-		//////fmt.Fprint(w, "GE done")
-	} else {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
-	}
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "index hit")
-	log.Println("Index")
-}
+var flagPort = flag.String("port", "8000", "Port to listen on")
 
 func init() {
-	log.SetPrefix("LOG: ")
+	log.SetPrefix("init: ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 	log.Println("init")
 	flag.Parse()
 }
+
+func Index(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Hello world!")
+	log.Println("index")
+}
+
 func handleRequests() {
 	myRouter := mux.NewRouter()
-
 	myRouter.HandleFunc("/", Index)
-	myRouter.HandleFunc("/articles", allArticles)
 	log.Fatal(http.ListenAndServe(":"+*flagPort, myRouter))
 }
 
 //MAIN
+const (
+	testIdx = "test.index"
+)
+
 func main() {
-	handleRequests()
+	idx, err := conn.BlaveIndex(testIdx)
+	if err != nil {
+		log.Println("Errore")
+		log.Println(idx)
+	}
+	r, err := conn.FindByText(idx, "ciao")
+	if err != nil {
+		log.Println("Errore")
+	} else {
+		//ELEMENTI TROVATI
+		for i := 0; i < int(r.Total); i++ {
+			log.Println(r.Hits[i].ID)
+
+		}
+	}
+
+	//d := models.InitCard("1.md")
+	//err = d.Index(idx)
+	//log.Println(err == nil)
+	//handleRequests()
+
 }
