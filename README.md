@@ -1,31 +1,7 @@
-# cody
+# Cody
 
-# Frontend
-## Project setup
-```
-cd web
-yarn install
-```
+![](http://u.cubeupload.com/hellix08/cody.gif)
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+Cody let's you search for simple and common programming errors, problems or how-to questions and provides a quick, straight-to-the-point answer. 
 
-### Compiles and minifies for production
-```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Made by [eliaperantoni](https://github.com/eliaperantoni) and [nicofretti](https://github.com/nicofretti)
