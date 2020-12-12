@@ -1,42 +1,34 @@
 package models
 
 import (
-	"bufio"
-	"os"
+	"io/ioutil"
+	"strings"
 
 	"github.com/blevesearch/bleve"
 )
 
 //STRUCT
 type Card struct {
-	Id      string `json:"id"`
-	Breads  string `json:"breads"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	Id      string   `json:"id"`
+	Breads  []string `json:"breads"`
+	Title   string   `json:"title"`
+	Content string   `json:"content"`
 }
 
 func InitCard(title string) Card {
-	file, _ := os.Open("cards/" + title)
-	fscanner := bufio.NewScanner(file)
-	var i Card
-	i.Id = title
-	cont := 0
-	for fscanner.Scan() {
-		switch cont {
-		case 0:
-			//BREADS
-			i.Breads = fscanner.Text()
-		case 1:
-			//TITLE
-			i.Title = fscanner.Text()
-		case 2:
-			//CONTENT
-			i.Content = fscanner.Text()
-		default:
-		}
-		cont++
+	cardBts, _ := ioutil.ReadFile("api/cards/" + title)
+	cardStr := string(cardBts)
+
+	tokens := strings.Split(cardStr, "\n")
+
+	content := strings.Join(tokens[2:], "\n")
+
+	return Card{
+		Id:      title,
+		Breads:  strings.Split(tokens[0], ","),
+		Title:   tokens[1],
+		Content: content,
 	}
-	return i
 }
 
 // METODO UTILIZZATO PER AGGIUNGERE UNA CARTA ALL'INDEX

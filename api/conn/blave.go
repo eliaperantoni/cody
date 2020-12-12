@@ -43,10 +43,11 @@ func FindByText(idx bleve.Index, text string) (*bleve.SearchResult , error) {
 	
 	query := bleve.NewMatchQuery(text)
 	searchRequest := bleve.NewSearchRequest(query)
-	search, err := idx.Search(searchRequest)
+	searchRequest.Fields = []string{"*"}
 
-	return search, err
+	return idx.Search(searchRequest)
 }
+
 func idxDestroy(testIdx string) {
 	os.RemoveAll(testIdx)
 }

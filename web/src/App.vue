@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <title v-text="title" />
+    <title v-text="title"/>
 
-    <Sidebar />
+    <Sidebar/>
 
     <div class="header-container">
-      <Header v-model="query" @input="search" />
+      <Header v-model="query" @input="search"/>
     </div>
 
     <div class="content" id="content">
       <transition appear @enter="animeCardEnter" @leave="animeCardLeave">
-        <Card v-if="showCard" :card="card" :key="card.title" />
+        <Card v-if="showCard" :card="card" :key="card.title"/>
       </transition>
     </div>
 
@@ -23,11 +23,11 @@
     </transition>
 
     <transition appear name="hint">
-      <Hint v-if="!showCard" />
+      <Hint v-if="!showCard"/>
     </transition>
 
     <transition name="footer">
-      <Footer v-if="showCard" />
+      <Footer v-if="showCard"/>
     </transition>
   </div>
 </template>
@@ -40,11 +40,11 @@ import Sidebar from "./components/Sidebar.vue";
 import Footer from "./components/Footer.vue";
 import axios from "axios";
 import anime from "animejs";
-import { debounce } from "lodash";
+import {debounce} from "lodash";
 
 export default {
   name: "app",
-  components: { Card, Hint, Sidebar, Footer, Header },
+  components: {Card, Hint, Sidebar, Footer, Header},
   data() {
     return {
       query: "",
@@ -56,10 +56,12 @@ export default {
   },
   computed: {
     card() {
+      if (this.cards.length === 0) return null;
+
       return this.cards[this.cardIndex];
     },
     showCard() {
-      return this.card != undefined;
+      return this.card != null;
     },
     title() {
       return this.showCard ? this.card.title : "Cody";
@@ -82,16 +84,16 @@ export default {
     this.updateHistory();
   },
   methods: {
-    search: debounce(async function() {
+    search: debounce(async function () {
       this.anime = "contextSwitch";
 
       if (this.query === "") {
         this.cards = [];
       } else {
         let res = await axios.get(
-          `http://localhost:5000/search?q=${this.query}`
+            `/api/search?q=${this.query}`
         );
-        this.cards = res.data;
+        this.cards = res.data || [];
       }
 
       this.scrollToTop();
@@ -123,9 +125,9 @@ export default {
         window.history.pushState(data, `Index`, `/`);
       } else {
         window.history.pushState(
-          data,
-          `Card ${this.card.id}`,
-          `/card/${this.card.id}`
+            data,
+            `Card ${this.card.id}`,
+            `/card/${this.card.id}`
         );
       }
     },
@@ -292,6 +294,7 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
+
   .header {
     @extend %center;
   }
@@ -311,6 +314,7 @@ body {
   @extend %center;
   margin: 0 auto;
   position: relative;
+
   .card {
     position: absolute;
     top: 4em;
@@ -331,6 +335,7 @@ body {
   @media screen and (min-width: 1000px) {
     font-size: 1em;
   }
+
   p {
     padding: 0;
   }
@@ -358,12 +363,13 @@ body {
   cursor: pointer;
 
   background: linear-gradient(
-    to top left,
-    rgb(0, 162, 255) 0%,
-    deepskyblue 100%
+          to top left,
+          rgb(0, 162, 255) 0%,
+          deepskyblue 100%
   );
 
   @include shadow(0.6, 12px);
+
   &:hover {
     filter: saturate(2);
     @include shadow(0.9, 18px);
@@ -426,6 +432,7 @@ body {
   &-enter {
     opacity: 0.2;
     transform: translateY(-20px);
+
     &-to {
       transform: none;
       opacity: 1;
@@ -435,6 +442,7 @@ body {
       transition: all 0.1s ease-out;
     }
   }
+
   &-leave {
     transform: none;
     opacity: 1;
