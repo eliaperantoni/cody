@@ -2,7 +2,7 @@
     <div class="footer">
         Made with <span class="love">♥</span> by 
         <span class="at">@eliaperantoni</span> and 
-        <span class="at">@NickFrex</span>
+        <span class="at">@nicofretti</span>
     </div>
 </template>
 
